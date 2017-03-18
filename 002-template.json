@@ -1,0 +1,17 @@
+{
+  "Resources" : {
+    "MyEC2" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "ImageId" : 'ami-b04e92d0',
+        "InstanceType" : "t2.micro"
+      }
+    },
+    "MyEIP" : {
+     "Type" : "AWS::EC2::EIP",
+     "Properties" : {
+         "InstanceId" : { "Ref" : "MyEC2" }
+     }
+    }
+}
+}

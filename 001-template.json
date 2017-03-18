@@ -1,0 +1,9 @@
+"Resources" : {
+    "MyJenkinsEC2" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "ImageId" : 'ami-b04e92d0',
+        "InstanceType" : "t2.micro"
+      }
+    }
+ }

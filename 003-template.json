@@ -1,0 +1,88 @@
+{
+  "Parameters": {
+    "KeyFile": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "Select Keypair For the Instance"
+    }
+  },
+  "Resources": {
+    "MyEC2": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": 'ami-b04e92d0',
+        "InstanceType": "t2.micro",
+        "KeyName": {
+          "Ref": "KeyFile"
+        }
+      }
+    },
+    "DB": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AllocatedStorage": 5,
+        "StorageType" : "gp2",
+        "DBInstanceClass": "db.t2.micro",
+        "DBName": "wordpress",
+        "Engine": "MySQL",
+        "MasterUsername": "wordpress",
+        "MasterUserPassword": "w0rdpr355"
+      }
+    },
+    "MyEIP": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "InstanceId": {
+          "Ref": "MyEC2"
+        }
+      }
+    },
+    "EBSVolume": {
+      "Type": "AWS::EC2::Volume",
+      "Properties": {
+        "Size": "100",
+        "AvailabilityZone":{"Fn::GetAtt":["MyEC2","AvailabilityZone"]} ,
+        "Tags": [
+          {
+            "Key": "MyTag",
+            "Value": "TagValue"
+          }
+        ]
+      }
+    },
+    "MountPoint": {
+      "Type": "AWS::EC2::VolumeAttachment",
+      "Properties": {
+        "InstanceId": {
+          "Ref": "MyEC2"
+        },
+        "VolumeId": {
+          "Ref": "EBSVolume"
+        },
+        "Device": "/dev/sdh"
+      }
+    },
+    "WebServersSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Created for webservers",
+        "VpcId" : "vpc-79c9c11d",
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    }
+  }
+}
